@@ -2,37 +2,26 @@ pipeline {
     agent any
 
     stages {
-
         stage('Build') {
             steps {
                 echo 'Building application...'
-                bat 'npm install'
+                sh 'npm install'
             }
         }
-
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                bat 'npm test'
+                sh 'npm test'
             }
         }
-
         stage('Docker Build') {
             steps {
-                echo 'Building Docker image...'
-                bat 'docker build -t my-node-app .'
+                sh 'docker build -t nodejs-demo-app:latest .'
             }
         }
-
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
-
-                bat '''
-                    docker stop my-node-container || true
-                    docker rm my-node-container || true
-                    docker run -d -p 3000:3000 --name my-node-container my-node-app
-                '''
+                sh 'docker rm -f nodejs-demo-app || true'
+                sh 'docker run -d --name nodejs-demo-app -p 3000:3000 nodejs-demo-app:latest'
             }
         }
     }
